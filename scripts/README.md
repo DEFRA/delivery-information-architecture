@@ -1,19 +1,28 @@
 # Scripts Directory
 
-This directory contains configuration for documentation generation tools provided by `@defra/delivery-info-arch-tooling`.
+This directory contains configuration and utilities for documentation generation tools provided by `@defra/delivery-info-arch-tooling`.
 
-## Configuration Files
+## Structure
 
-- `confluence-config.json` - Confluence publishing configuration (create from example)
+```
+scripts/
+├── README.md
+├── check-diagrams.js           # Pre-dev script to ensure diagrams exist
+└── confluence/
+    ├── confluence-config.example.json  # Example config
+    └── confluence-config.json          # Your config (create from example)
+```
 
-## Creating Configuration
+## Configuration
+
+### Confluence Publishing
 
 ```bash
-# Copy example from tooling library
-cp node_modules/@defra/delivery-info-arch-tooling/examples/config-examples/confluence-config.json.example scripts/confluence-config.json
+# Copy example config
+cp scripts/confluence/confluence-config.example.json scripts/confluence/confluence-config.json
 
 # Edit with your settings
-nano scripts/confluence-config.json
+nano scripts/confluence/confluence-config.json
 ```
 
 ## NPM Scripts
@@ -22,13 +31,16 @@ Available commands (from root `package.json`):
 
 | Command | Description |
 |---------|-------------|
-| `npm run build:diagrams` | Export LikeC4 diagrams as PNG |
-| `npm run publish:confluence` | Publish to Confluence |
-| `npm run generate:pptx` | Generate PowerPoint |
-| `npm run export:pdf` | Export to PDF |
+| `npm run dev` | Start Astro dev server (auto-generates diagrams if missing) |
+| `npm run build:diagrams` | Export LikeC4 diagrams as PNG to `generated/diagrams/` |
+| `npm run build:mmd` | Convert Mermaid files to SVG |
+| `npm run build:mermaid-from-likec4` | Generate Mermaid from LikeC4 dynamic views |
+| `npm run pptx:build <file>` | Generate PowerPoint from markdown |
+| `npm run export:pdf <file>` | Export markdown to PDF |
+| `npm run publish:confluence` | Publish all docs to Confluence |
+| `npm run publish:confluence:space <KEY>` | Publish to specific Confluence space |
 | `npm run validate:c4` | Validate C4 models |
 
 ## Documentation
 
 See the [tooling library documentation](https://github.com/DEFRA/delivery-info-arch-tooling) for full details.
-
