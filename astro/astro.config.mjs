@@ -56,7 +56,10 @@ export default defineConfig({
           label: "Guidelines",
           items: [
             { label: "Documentation as Code", link: "/guidelines/documentation-as-code" },
-            { label: "AI Guidelines", link: "/guidelines/ai-guidelines" },
+            { label: "Documentation Structure", link: "/guidelines/documentation-structure" },
+            { label: "PowerPoint Generation", link: "/guidelines/ppt-generation" },
+            { label: "Conditional Content", link: "/guidelines/conditional-content" },
+            { label: "AI-Assisted Documentation", link: "/guidelines/ai-guidelines" },
           ],
         },
         {
