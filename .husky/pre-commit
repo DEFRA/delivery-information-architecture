@@ -1,0 +1,14 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Validate C4 files before commit (only if C4 files are staged)
+if git diff --cached --name-only | grep -q '\.c4$'; then
+  echo "Validating C4 files..."
+  npm run validate:c4
+fi
+
+# Run linting for JavaScript files (only if JS files are staged)
+if git diff --cached --name-only | grep -qE '\.(js|mjs|cjs)$'; then
+  echo "Linting JavaScript files..."
+  npm run lint
+fi

@@ -1,0 +1,167 @@
+// ============================================================================
+// Defra-wide Vertical Landscape
+// ============================================================================
+// High-level view of Defra's verticals and their relationships to external systems.
+// This provides an overview of the Defra digital landscape.
+// ============================================================================
+
+model {
+    // -------------------------------------------------------------------------
+    // Defra Verticals (Internal Systems)
+    // -------------------------------------------------------------------------
+
+    trade = systemGroup "Trade" {
+        description "Trade imports, exports, and border control systems"
+        link https://github.com/DEFRA/trade-imports-documentation
+
+        btms = system "BTMS" {
+            description "Border Trade Matching Service - matches import notifications with customs declarations"
+        }
+
+        ipaffs = system "IPAFFS" {
+            description "Import of Products, Animals, Food and Feed System"
+        }
+
+        dmp = system "DMP" {
+            description "Data Matching Platform"
+        }
+
+        tradePlatform = system "Trade Platform" {
+            description "Cross-government trade systems"
+        }
+    }
+
+    farming = systemGroup "Farming" {
+        description "Farming policy and payments"
+        // link https://github.com/DEFRA/farming-documentation
+
+        ruralPayments = system "Rural Payments" {
+            description "Rural payments and grants management"
+        }
+
+        elmSchemes = system "ELM Schemes" {
+            description "Environmental Land Management schemes"
+        }
+    }
+
+    marine = systemGroup "Marine (MMO)" {
+        description "Marine Management Organisation - fisheries and marine management"
+        // link https://github.com/DEFRA/mmo-documentation
+
+        fishLicensing = system "Fish Licensing" {
+            description "Commercial fishing vessel licensing"
+        }
+
+        catchRecording = system "Catch Recording" {
+            description "Commercial catch reporting and monitoring"
+        }
+    }
+
+    epr = systemGroup "EPR" {
+        description "Extended Producer Responsibility"
+        // link https://github.com/DEFRA/epr-documentation
+
+        packagingData = system "Packaging Data" {
+            description "Packaging producer obligations and reporting"
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // Shared Services
+    // -------------------------------------------------------------------------
+
+    sharedServices = systemGroup "Shared Services" {
+        description "Cross-cutting Defra shared services"
+
+        defraIdentity = system "Defra Identity" {
+            description "Identity and access management"
+        }
+
+        cdp = system "CDP" {
+            description "Core Delivery Platform - shared hosting infrastructure"
+        }
+    }
+
+    // -------------------------------------------------------------------------
+    // External Systems
+    // -------------------------------------------------------------------------
+
+
+    hmrc = systemGroup "HMRC" {
+        hmrcCds = externalSystem "HMRC CDS" {
+            description "Customs Declaration Service"
+        }
+        hmrcGvms = externalSystem "HMRC GVMS" {
+            description "Goods Vehicle Movement Service"
+        }
+    }
+
+    govUkNotify = externalSystem "GOV.UK Notify" {
+        description "Government notification service for emails and SMS"
+    }
+
+    govUkPay = externalSystem "GOV.UK Pay" {
+        description "Government payment service"
+    }
+
+    // -------------------------------------------------------------------------
+    // Key Relationships
+    // -------------------------------------------------------------------------
+  
+    // Trade vertical relationships
+    trade.btms -> hmrcCds "Receives customs declarations"
+    trade.btms -> trade.ipaffs "Receives import notifications"
+    trade.dmp -> hmrcGvms "GMR matching"
+  
+    // Shared service relationships
+    trade -> sharedServices.defraIdentity "Authentication"
+    farming -> sharedServices.defraIdentity "Authentication"
+    marine -> sharedServices.defraIdentity "Authentication"
+  
+    // Notification services
+    trade -> govUkNotify "Sends notifications"
+    farming -> govUkNotify "Sends notifications"
+  
+    // Payment services
+    epr -> govUkPay "Processes payments"
+    marine -> govUkPay "Processes payments"
+}
+
+views {
+    view defraLandscape {
+        title "Defra-wide Vertical Landscape"
+        description "High-level view of Defra verticals and shared external systems"
+
+        include *
+
+        autoLayout TopBottom
+    }
+
+    view defraVerticalsOnly {
+        title "Defra Verticals Overview"
+        description "Internal Defra verticals without external systems"
+
+        include trade
+        include farming
+        include marine
+        include epr
+        include sharedServices
+
+        autoLayout LeftRight
+    }
+
+    view tradeEcosystem {
+        title "Trade Vertical Ecosystem"
+        description "Trade vertical and its external integrations"
+
+        include trade
+        include trade.*
+        include hmrcCds
+        include hmrcGvms
+        include tradePlatform
+        include govUkNotify
+
+        autoLayout TopBottom
+    }
+}
+

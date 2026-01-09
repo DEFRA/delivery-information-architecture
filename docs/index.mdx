@@ -1,0 +1,135 @@
+---
+title: Defra Architecture Documentation
+description: Defra-wide architecture view and starter template for vertical documentation
+---
+
+import LikeC4View from '@components/LikeC4View.astro'
+
+# Welcome to Defra Architecture Documentation
+
+This repository serves two purposes:
+
+1. **Defra-wide Architecture View** - A high-level overview of Defra's verticals and their relationships
+2. **Starter Template** - A ready-to-use template for creating vertical documentation-as-code repositories
+
+## Documentation as Code
+
+This repository follows a **documentation-as-code** approach - treating documentation with the same rigor, tooling, and processes as software code.
+
+**[Learn more about Documentation as Code →](/documentation-as-code)**
+
+## Defra Landscape
+
+<LikeC4View viewId="defraLandscape" />
+
+## Verticals
+
+Defra's digital services are organised into verticals:
+
+| Vertical | Description | Documentation |
+|----------|-------------|---------------|
+| **Trade** | Imports, exports, border control | [View →](https://github.com/DEFRA/trade-imports-documentation) |
+| **Farming** | Policy and payments | Coming soon |
+| **Marine (MMO)** | Fisheries and marine management | Coming soon |
+| **EPR** | Extended producer responsibility | Coming soon |
+
+## Using as a Template
+
+This repository doubles as a **starter template** for creating vertical documentation repos.
+
+### Quick Start
+
+```bash
+# Clone this repository
+git clone https://github.com/DEFRA/delivery-information-architecture.git my-vertical-docs
+cd my-vertical-docs
+
+# Remove git history and start fresh
+rm -rf .git
+git init
+
+# Install dependencies
+npm install
+cd astro && npm install && cd ..
+
+# Start development server
+npm run dev
+```
+
+### What You Get
+
+- ✅ Pre-configured LikeC4 + Astro setup
+- ✅ Reusable C4 specification file with common element types
+- ✅ GitHub Pages deployment workflow
+- ✅ Confluence/PPT/PDF generation tooling
+- ✅ Example C4 models and documentation
+- ✅ GitHub Actions workflows
+- ✅ Husky pre-commit hooks for validation
+
+## Development
+
+### Prerequisites
+
+- Node.js 18+
+- npm
+
+### Setup
+
+```bash
+# Install root dependencies
+npm install
+
+# Install Astro dependencies
+cd astro && npm install && cd ..
+```
+
+### Commands
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server (auto-generates diagrams if needed) |
+| `npm run build` | Build for production |
+| `npm run build:diagrams` | Export LikeC4 diagrams as PNG |
+| `npm run validate:c4` | Validate C4 models |
+| `npm run publish:confluence` | Publish to Confluence |
+| `npm run generate:pptx` | Generate PowerPoint |
+| `npm run export:pdf` | Export to PDF |
+
+## Project Structure
+
+```
+delivery-information-architecture/
+├── architecture/              # Architecture diagrams (C4, MMD, PUML)
+│   ├── specification.c4       # Reusable C4 element types
+│   └── defra-wide/            # Defra landscape models
+│       └── defra-landscape.c4
+├── docs/                      # Written documentation (source of truth)
+│   ├── index.mdx              # Homepage
+│   ├── documentation-as-code.md  # Documentation-as-code guide
+│   ├── defra-landscape/       # Landscape documentation
+│   └── verticals/             # Vertical descriptions
+├── astro/
+│   ├── astro.config.mjs       # Astro configuration
+│   ├── likec4.config.json     # LikeC4 configuration
+│   └── src/
+│       └── content/
+│           └── docs -> ../../../docs  # Symlink to /docs
+├── generated/                  # Generated files (gitignored)
+│   ├── diagrams/              # Exported LikeC4 diagrams (PNG)
+│   ├── pdf/                   # Generated PDF files
+│   └── pptx/                  # Generated PowerPoint files
+├── scripts/                   # Tooling configuration
+├── package.json
+└── README.md
+```
+
+**Note**: Documentation files are in `/docs` (visible in GitHub). The `astro/src/content/docs` is a symlink for Astro's content collection system.
+
+## Related Resources
+
+- [Documentation as Code Guide](/documentation-as-code) - Philosophy and approach to documentation-as-code at Defra
+- [Tooling Library](https://github.com/DEFRA/delivery-info-arch-tooling) - Shared documentation generation tools
+- [Trade Documentation](https://github.com/DEFRA/trade-imports-documentation) - Example vertical documentation
+- [LikeC4](https://likec4.dev) - Architecture diagramming tool
+- [Astro Starlight](https://starlight.astro.build) - Documentation framework
+

@@ -1,0 +1,103 @@
+name: Publish to Confluence
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**"
+      - "architecture/**"
+      - ".github/workflows/publish-confluence.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  publish-to-confluence:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Download diagram exports (if available)
+        id: download-diagrams
+        uses: actions/download-artifact@v4
+        with:
+          name: likec4-diagrams
+          path: generated/diagrams
+        continue-on-error: true
+
+      - name: Prepare diagram exports
+        run: |
+          # Ensure diagrams directory exists
+          mkdir -p generated/diagrams
+
+          # Check if diagrams are available
+          image_count=$(find generated/diagrams -type f \( -name "*.png" -o -name "*.svg" \) 2>/dev/null | wc -l)
+          if [ "$image_count" -gt 0 ]; then
+            has_diagrams="true"
+          else
+            has_diagrams="false"
+          fi
+
+          echo "has_diagrams=$has_diagrams" >> $GITHUB_OUTPUT
+          echo "Found $image_count diagram image(s)"
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check Confluence configuration
+        id: check-config
+        run: |
+          if [ -z "${{ secrets.CONFLUENCE_API_TOKEN }}" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⚠️  CONFLUENCE_API_TOKEN secret not set. Skipping Confluence publishing."
+            echo "To enable: Settings → Secrets → Actions → Add CONFLUENCE_API_TOKEN"
+          elif [ -z "${{ secrets.CONFLUENCE_USER_EMAIL }}" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⚠️  CONFLUENCE_USER_EMAIL secret not set. Skipping Confluence publishing."
+            echo "To enable: Settings → Secrets → Actions → Add CONFLUENCE_USER_EMAIL"
+          elif [ ! -f "scripts/confluence-config.json" ]; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⚠️  scripts/confluence-config.json not found. Skipping Confluence publishing."
+            echo "Create scripts/confluence-config.json from scripts/confluence-config.json.example to enable publishing."
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "✅ Confluence configuration found. Proceeding with publishing..."
+          fi
+
+      - name: Publish to Confluence
+        if: steps.check-config.outputs.skip == 'false'
+        env:
+          CONFLUENCE_API_TOKEN: ${{ secrets.CONFLUENCE_API_TOKEN }}
+          CONFLUENCE_USER_EMAIL: ${{ secrets.CONFLUENCE_USER_EMAIL }}
+          CONFLUENCE_SPACE_KEY: ${{ vars.CONFLUENCE_SPACE_KEY }}
+          CONFLUENCE_PARENT_PAGE_ID: ${{ vars.CONFLUENCE_PARENT_PAGE_ID }}
+          CONFLUENCE_BASE_URL: ${{ vars.CONFLUENCE_BASE_URL }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          npm run publish:confluence
+
+      - name: Notify on success
+        if: steps.check-config.outputs.skip == 'false' && success()
+        run: |
+          echo "✅ Documentation published to Confluence!"
+
+      - name: Notify on skip
+        if: steps.check-config.outputs.skip == 'true'
+        run: |
+          echo "ℹ️  Confluence publishing skipped (not configured)"
+
+      - name: Notify on failure
+        if: steps.check-config.outputs.skip == 'false' && failure()
+        run: |
+          echo "❌ Failed to publish documentation to Confluence"
+          echo "Check the logs above for details"

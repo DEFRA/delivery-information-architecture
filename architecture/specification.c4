@@ -1,0 +1,171 @@
+// ============================================================================
+// Defra Delivery Information Architecture - Reusable C4 Specification
+// ============================================================================
+// This file contains reusable element types and styles for C4 models.
+// Include this file in your architecture models to get consistent styling.
+//
+// Usage: Copy this file to your vertical's architecture/ directory
+// ============================================================================
+
+specification {
+  // -------------------------------------------------------------------------
+  // People & Actors
+  // -------------------------------------------------------------------------
+  element person {
+    style {
+      shape person
+      color muted
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // System-level Elements
+  // -------------------------------------------------------------------------
+  element systemGroup {
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  element system {
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  element externalSystem {
+    style {
+      shape rectangle
+      color muted
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Container-level Elements
+  // -------------------------------------------------------------------------
+  element component {
+    style {
+      shape rectangle
+      color green
+    }
+  }
+
+  element microservice {
+    style {
+      shape rectangle
+      color green
+      icon tech:docker
+    }
+  }
+
+  element frontend {
+    style {
+      shape browser
+      color green
+      icon tech:nodejs
+    }
+  }
+
+  element browser {
+    style {
+      shape browser
+      color muted
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Cloud Infrastructure - Azure
+  // -------------------------------------------------------------------------
+  element azureInfrastructure {
+    style {
+      shape rectangle
+      color blue
+    }
+  }
+
+  element azureFunction {
+    style {
+      shape rectangle
+      color green
+      icon: azure:function-apps
+    }
+  }
+
+  element azureServiceBus {
+    style {
+      shape queue
+      color blue
+      icon azure:azure-service-bus
+    }
+  }
+
+  element azureSQL {
+    style {
+      shape rectangle
+      color blue
+      icon azure:sql-database
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Cloud Infrastructure - AWS
+  // -------------------------------------------------------------------------
+  element awsInfrastructure {
+    style {
+      shape rectangle
+      color amber
+    }
+  }
+
+  element awsSQS {
+    style {
+      shape queue
+      color amber
+      icon aws:simple-queue-service
+    }
+  }
+
+  element awsSNS {
+    style {
+      shape rectangle
+      color amber
+      icon aws:simple-notification-service
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Database Elements
+  // -------------------------------------------------------------------------
+  element mongoDB {
+    style {
+      shape cylinder
+      color slate
+      icon tech:mongodb
+    }
+  }
+
+  element queue {
+    style {
+      shape queue
+      color sky
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // Tags for Special States
+  // -------------------------------------------------------------------------
+  tag deprecated {
+    color #DCDCDC
+  }
+
+  tag planned {
+    color #87CEEB
+  }
+
+  tag inProgress {
+    color #FFD700
+  }
+}
+

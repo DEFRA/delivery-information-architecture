@@ -1,0 +1,27 @@
+{
+  "name": "@defra/delivery-information-architecture",
+  "version": "1.0.0",
+  "description": "Defra-wide architecture view + starter template for vertical documentation",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/check-diagrams.js && cd astro && npm run dev",
+    "build": "cd astro && npm run build",
+    "build:diagrams": "likec4 export png architecture -o generated/diagrams",
+    "publish:confluence": "publish-to-confluence --config scripts/confluence-config.json",
+    "generate:pptx": "generate-pptx",
+    "export:pdf": "export-pdf",
+    "validate:c4": "likec4 validate",
+    "prepare": "husky",
+    "test": "echo 'No tests configured'",
+    "lint": "neostandard",
+    "lint:fix": "neostandard --fix"
+  },
+  "dependencies": {
+    "@defra/delivery-info-arch-tooling": "file:../delivery-info-arch-tooling"
+  },
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "likec4": "^1.47.0",
+    "neostandard": "^0.12.2"
+  }
+}

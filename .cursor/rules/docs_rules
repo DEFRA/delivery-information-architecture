@@ -1,0 +1,366 @@
+# Defra Documentation Template - Documentation Rules
+
+## Project Overview
+The docs directory in this repository contains documentation for Defra vertical systems to be used as source for other documentation systems.
+There are multiple goals that this tries to fulfill:
+- Make use of AI LLM models for documentation generation
+- Make use of gitops workflows to maintain documentation quality
+- Automate the creation of documentation from a single source as much as possible.
+
+To this end, we currently look to generate documentation for three target systems:
+- **Confluence**: Most Defra users will have access to confluence and can make use of its search and hierarchy of documents. Allows a large amount of content and formatting options.
+- **Powerpoint**: For offline consumption, presenting and sharing externally, Powerpoint slides are used. These typically include a summary of what is created on confluence.
+- **Github pages**: For users of the github repos themselves, can make reading content easier than trawling through the repos.
+
+## File Structure
+
+### Directory Organization
+```
+my-vertical-docs/
+├── architecture/               # Source of Diagrams as code, see .cursor/rules/likec4_rules
+│   ├── current/                # Current state architecture diagrams
+│   │   ├── system1/            # System 1 diagrams
+│   │   ├── system2/            # System 2 diagrams
+│   │   └── vertical/           # Vertical-wide diagrams
+│   └── roadmap/               # Future state architecture diagrams
+├── astro/                     # Astro for github pages (not the actual content - symlink from elsewhere)
+├── docs/                      # Single source of truth for written documentation
+│   ├── systems/               # Contains directories for each system
+│   │   ├── system1/           # Contains system1 documentation - matches top-level of system1 space. Directory structure beneath it is matched in confluence.
+│   │   │   └── Technology View/
+│   │   │       └── Current State Views/
+│   │   ├── system2/           # Contains system2 documentation
+│   │   └── ...
+│   └── vertical/              # Contains vertical-wide documentation - matches top-level of vertical space. Directory structure beneath it is matched in confluence.
+│       └── Delivery Information Architecture/
+│           └── Technology View/
+│               └── Current State Views/
+├── generated/                 # Generated output - not source controlled
+│   ├── diagrams/              # Exported diagram images
+│   ├── pdf/                  # Generated PDF files
+│   └── pptx/                  # Generated PowerPoint files
+├── scripts/                   # All scripts for content generation
+│   ├── confluence/           # Confluence publishing scripts
+│   ├── diagrams/             # Diagram export/conversion
+│   ├── pdf/                  # PDF generation scripts
+│   ├── ppt/                  # PowerPoint generation scripts
+│   └── util/                 # General utility scripts
+└── templates/                 # Templates for generated outputs
+```
+
+### File Naming Conventions
+
+- **Markdown files**: Use PascalCase for multi-word titles (e.g., `System Context View.md`, `Feature Name.md`)
+- **System directories**: Use lowercase (e.g., `system1/`, `system2/`)
+- **View directories**: Use PascalCase to match Confluence page titles (e.g., `Technology View/`, `Current State Views/`)
+- **Diagram files**: Follow LikeC4 naming conventions (see `.cursor/rules/likec4_rules`)
+
+## Markdown Content Guidelines
+
+### Document Structure
+
+Every documentation file should follow this structure:
+
+```markdown
+# Title
+
+Brief introduction/overview paragraph.
+
+## Section 1
+Content...
+
+## Section 2
+Content...
+
+## References
+- Link to related documentation
+- External resources
+```
+
+### Headings
+
+- Use `#` for the main title (H1) - only one per document
+- Use `##` for major sections (H2)
+- Use `###` for subsections (H3)
+- Use `####` for sub-subsections (H4) - avoid deeper nesting
+- Headings should be descriptive and follow a logical hierarchy
+
+### Content Formatting
+
+- **Bold** (`**text**`) for emphasis and key terms
+- *Italic* (`*text*`) for technical terms on first use
+- `Code` (backticks) for:
+  - API endpoints
+  - Configuration values
+  - File paths
+  - Command names
+  - Environment variables
+- Avoid unecessary use of emojis
+
+### Lists
+
+- Use bullet lists (`-`) for unordered items
+- Use numbered lists (`1.`) for sequential steps or ordered items
+- Indent nested lists with 2 spaces
+- Keep list items concise and parallel in structure
+
+### Code Blocks
+
+Use fenced code blocks with language identifiers:
+
+````markdown
+```javascript
+// Example code
+function example() {
+  return true;
+}
+```
+````
+
+Common languages: `javascript`, `json`, `yaml`, `bash`, `sql`, `python`
+
+### Links
+
+- **Internal links**: Use relative paths to other markdown files
+  ```markdown
+  [Link Text](./relative/path/to/file.md)
+  ```
+- **External links**: Use full URLs
+  ```markdown
+  [Link Text](https://example.com)
+  ```
+- **Confluence links**: Will be automatically converted during publishing
+
+### Images and Diagrams
+
+- Reference diagrams from `architecture/` directory using LikeC4 components:
+  ```markdown
+  <LikeC4View viewId="system-context" />
+  ```
+- For static images, place in `docs/assets/` and reference:
+  ```markdown
+  ![Alt text](./assets/image.png)
+  ```
+- Diagrams are automatically exported and embedded during build
+
+## Format-Specific Content
+
+### Conditional Content Markers
+
+Use format-specific content blocks to include/exclude content for different outputs:
+
+```markdown
+<!-- GITHUB_ONLY -->
+Content only visible on GitHub Pages
+<!-- END_GITHUB_ONLY -->
+
+<!-- CONFLUENCE_ONLY -->
+Content only visible in Confluence
+<!-- END_CONFLUENCE_ONLY -->
+
+<!-- PPT_ONLY -->
+Content only visible in PowerPoint slides
+<!-- END_PPT_ONLY -->
+```
+
+**Guidelines:**
+- Use `GITHUB_ONLY` for GitHub-specific navigation, badges, or links
+- Use `CONFLUENCE_ONLY` for Confluence macros, advanced formatting, or space-specific content
+- Use `PPT_ONLY` for slide-specific content, speaker notes, or presentation-only material
+- Always close blocks with `END_<FORMAT>_ONLY`
+- Blocks can be nested if needed
+
+### Confluence-Specific Features
+
+- **Page hierarchy**: Maintained through directory structure
+- **Labels**: Automatically added as "generated" by publishing script
+- **Space mapping**: Configured in `scripts/confluence-config.json`
+  - `systems/system1/` → System1 space
+  - `systems/system2/` → System2 space
+  - `vertical/` → Vertical space
+- **Atlas Document Format**: Content is automatically converted to cloud editor format
+
+### PowerPoint-Specific Features
+
+- **Slide breaks**: Use `---` (three dashes) to create new slides
+- **Slide titles**: Use `# Title` at the start of each slide section
+- **Speaker notes**: Use `<!-- Speaker notes here -->` (will be converted)
+- **Marp directives**: Can be included for advanced formatting
+- **Template**: Uses `templates/defra-template.pptx` for styling
+
+### GitHub Pages-Specific Features
+
+- **Navigation**: Automatically generated from file structure
+- **Frontmatter**: Can include metadata:
+  ```markdown
+  ---
+  title: Page Title
+  description: Page description
+  ---
+  ```
+- **Components**: Astro components like `<LikeC4View />` are rendered
+
+## System-Specific Documentation
+
+### System Documentation Structure
+- Location: `docs/systems/<system-name>/`
+- Confluence Space: Configured per system in `scripts/confluence-config.json`
+- Focus areas:
+  - Technology View / Current State Views
+  - System Context
+  - Features (e.g., specific functionality)
+
+### Vertical-Wide Documentation
+- Location: `docs/vertical/`
+- Confluence Space: Configured in `scripts/confluence-config.json`
+- Focus areas:
+  - System Landscape View
+  - Cross-system integration
+  - Common patterns and practices
+
+## Diagram Integration
+
+### LikeC4 Diagrams
+- Source files: `architecture/current/<system>/c4/`
+- Views defined in `.c4` files
+- Automatically exported to PNG during build
+- Embedded using `<LikeC4View viewId="view-name" />` component
+
+### Mermaid Diagrams
+- Source files: `architecture/current/<system>/mmd/`
+- Converted to images during build
+- Reference in markdown: `![Diagram](./path/to/diagram.png)`
+
+### Diagram Best Practices
+- Keep diagrams focused and readable
+- Use consistent naming conventions
+- Update diagrams when architecture changes
+- Export diagrams before publishing to ensure they're available
+
+## Content Quality Guidelines
+
+### Writing Style
+- **Clarity**: Write clearly and concisely
+- **Audience**: Write for technical stakeholders (developers, architects, product owners)
+- **Tone**: Professional but approachable
+- **Active voice**: Prefer active voice over passive
+- **Consistency**: Use consistent terminology throughout
+
+### Technical Accuracy
+- Verify all technical details before committing
+- Keep documentation up-to-date with code changes
+- Document assumptions and constraints
+- Include examples where helpful
+
+### Completeness
+- Each document should be self-contained where possible
+- Include context and background information
+- Link to related documentation
+- Provide references for further reading
+
+### Maintenance
+- Review documentation regularly
+- Update when systems change
+- Remove outdated information
+- Keep cross-references current
+
+## Publishing Workflows
+
+### Confluence Publishing
+```bash
+# Publish all files
+npm run publish:confluence
+
+# Publish only files for a specific space (if configured)
+npm run publish:confluence -- --space SPACE_KEY
+```
+
+**Important:**
+- Files are automatically filtered by space when `--space` is specified
+- Space mappings are configured in `scripts/confluence-config.json`
+- Without `--space`, all configured files are published to their respective spaces
+
+### PowerPoint Generation
+```bash
+# Generate from markdown
+npm run generate:pptx <path/to/file.md>
+```
+
+### PDF Generation
+```bash
+# Export to PDF
+npm run export:pdf <path/to/file.md>
+```
+
+## Best Practices
+
+### Do's
+- Use clear, descriptive file and section names
+- Include diagrams to illustrate concepts
+- Use conditional content markers for format-specific content
+- Keep documentation focused and scoped appropriately
+- Update related documentation when making changes
+- Test generated outputs before committing
+- Use consistent formatting and structure
+- Link to related documentation
+
+### Don'ts
+- Don't duplicate content across multiple files
+- Don't use format-specific features without conditional markers
+- Don't commit generated files (they're in `.gitignore`)
+- Don't use absolute paths in links
+- Don't hardcode space-specific information without conditional markers
+- Don't mix concerns (keep system docs separate from vertical-wide docs)
+- Don't commit sensitive information (API keys, credentials, etc.)
+
+## Related Documentation
+
+- [Documentation as Code Guide](/documentation-as-code) - Philosophy and approach to documentation-as-code
+- [scripts/README.md](../scripts/README.md) - Scripts documentation
+- [likec4_rules](.cursor/rules/likec4_rules) - Diagram as code guidelines
+
+## Scripting Language Preferences
+
+**IMPORTANT**: Scripts should be written in **JavaScript** (Node.js), not Bash.
+
+- **JavaScript is the preferred language** for all scripts in this repository
+- **Minimal Bash is acceptable** only when absolutely necessary (e.g., simple wrapper scripts)
+- **C# can be acceptable** for certain types of scripts, but is not required
+- **Use vanilla JavaScript only** - no TypeScript without approved exception
+- Use modern JavaScript best practices:
+  - ES6+ features (async/await, arrow functions, destructuring, etc.)
+  - Proper error handling with try/catch
+  - Modular code structure
+  - Use Node.js built-in modules where possible (fs/promises, path, etc.)
+  - Consider using appropriate npm packages for complex operations
+
+### Linting Standards
+
+- **Use [neostandard](https://github.com/neostandard/neostandard) for linting** (Defra JavaScript standard)
+- neostandard is an opinionated JavaScript linter that enforces consistent coding style
+- Do not extend or modify the neostandard ruleset
+- Do not disable formatting rules (`noStyle` should not be set to `true`)
+- Run `npm run lint` before committing
+- Use `npm run lint:fix` to automatically fix linting issues
+
+When creating or modifying scripts:
+- Prefer JavaScript over Bash
+- If Bash is required, keep it minimal and consider refactoring to JavaScript
+- Follow existing JavaScript patterns in the codebase
+- Use proper logging and error messages
+- Include JSDoc comments for functions
+- Ensure code passes neostandard linting
+
+## AI Assistant Guidelines
+
+When working with documentation in this repository:
+
+1. **Respect the structure**: Follow the established directory and file organization
+2. **Use conditional content**: Always use format-specific markers when content differs between outputs
+3. **Maintain consistency**: Follow existing patterns and conventions
+4. **Check space mappings**: Verify Confluence space mappings before suggesting changes
+5. **Test outputs**: Consider how changes will appear in all three output formats
+6. **Update related docs**: When making changes, check if related documentation needs updates
+7. **Follow naming conventions**: Use PascalCase for files, lowercase for directories
+8. **Preserve hierarchy**: Maintain the Technology View / Current State Views structure
+9. **Use JavaScript for scripts**: Always prefer JavaScript over Bash when creating or modifying scripts
