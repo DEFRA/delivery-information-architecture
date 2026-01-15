@@ -1,0 +1,75 @@
+---
+// Component to make images clickable to view full size
+interface Props {
+  src: string;
+  alt?: string;
+}
+
+const { src, alt = '' } = Astro.props;
+
+// Only make diagram images clickable (from likec4-exports)
+const isClickable = src.includes('/likec4-exports/');
+---
+
+{isClickable ? (
+  <a href={src} target="_blank" rel="noopener noreferrer" class="diagram-link" title="Click to view full size">
+    <img src={src} alt={alt} />
+  </a>
+) : (
+  <img src={src} alt={alt} />
+)}
+
+<style>
+  a.diagram-link {
+    display: inline-block;
+    position: relative;
+    cursor: zoom-in;
+    transition: opacity 0.2s ease;
+    text-decoration: none;
+    border: none;
+    margin: 1rem 0;
+  }
+
+  a.diagram-link:hover {
+    opacity: 0.95;
+  }
+
+  a.diagram-link img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    border: 1px solid var(--sl-color-gray-5, #e5e7eb);
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    margin: 0;
+  }
+
+  a.diagram-link:hover img {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: scale(1.01);
+    border-color: var(--sl-color-accent, #0ea5e9);
+  }
+
+  /* Add a subtle icon to indicate the image is clickable */
+  a.diagram-link::after {
+    content: "🔍 Click to enlarge";
+    position: absolute;
+    bottom: 1rem;
+    right: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.5rem 0.875rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    pointer-events: none;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  a.diagram-link:hover::after {
+    opacity: 1;
+  }
+</style>

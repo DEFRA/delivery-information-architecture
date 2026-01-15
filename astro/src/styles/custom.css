@@ -1,0 +1,54 @@
+/* Custom styles for clickable diagrams */
+
+.sl-markdown-content a.diagram-link {
+  display: inline-block !important;
+  position: relative;
+  cursor: zoom-in !important;
+  transition: opacity 0.2s ease;
+  text-decoration: none !important;
+  border: none !important;
+  margin: 1rem 0;
+}
+
+.sl-markdown-content a.diagram-link:hover {
+  opacity: 0.95 !important;
+}
+
+.sl-markdown-content a.diagram-link img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border: 1px solid var(--sl-color-gray-5, #e5e7eb);
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+  margin: 0;
+}
+
+.sl-markdown-content a.diagram-link:hover img {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  transform: scale(1.01) !important;
+  border-color: var(--sl-color-accent, #0ea5e9) !important;
+}
+
+/* Add a subtle icon to indicate the image is clickable */
+.sl-markdown-content a.diagram-link::after {
+  content: "🔍 Click to enlarge";
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 0.5rem 0.875rem;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  z-index: 10;
+}
+
+.sl-markdown-content a.diagram-link:hover::after {
+  opacity: 1 !important;
+}

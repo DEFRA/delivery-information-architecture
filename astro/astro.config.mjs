@@ -38,6 +38,14 @@ export default defineConfig({
     }),
     starlight({
       title: "Defra Architecture",
+      components: {
+        // Override the MarkdownContent component to use our custom image component
+        MarkdownContent: './src/components/MarkdownContentOverride.astro',
+      },
+      customCss: [
+        // Custom styles for clickable diagrams
+        './src/styles/custom.css',
+      ],
       social: [
         {
           icon: "github",

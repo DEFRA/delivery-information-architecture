@@ -1,0 +1,48 @@
+---
+// Override Starlight's MarkdownContent to make diagram images clickable
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import ClickableImage from './ClickableImage.astro';
+
+const props = Astro.props;
+---
+
+<Default {...props}>
+  <slot />
+</Default>
+
+<script>
+  // Client-side script to make images clickable after page load
+  function makeImagesClickable() {
+    const images = document.querySelectorAll('.sl-markdown-content img[src*="/likec4-exports/"]');
+    
+    images.forEach((img) => {
+      // Skip if already wrapped
+      if (img.parentElement?.classList.contains('diagram-link')) {
+        return;
+      }
+      
+      const src = img.getAttribute('src');
+      const alt = img.getAttribute('alt') || '';
+      
+      if (src && src.includes('/likec4-exports/')) {
+        // Create wrapper link
+        const link = document.createElement('a');
+        link.href = src;
+        link.target = '_blank';
+        link.rel = 'noopener noreferrer';
+        link.className = 'diagram-link';
+        link.title = 'Click to view full size';
+        
+        // Replace image with wrapped version
+        img.parentNode?.replaceChild(link, img);
+        link.appendChild(img);
+      }
+    });
+  }
+  
+  // Run on page load
+  makeImagesClickable();
+  
+  // Run after view transitions (Starlight uses view transitions)
+  document.addEventListener('astro:page-load', makeImagesClickable);
+</script>
