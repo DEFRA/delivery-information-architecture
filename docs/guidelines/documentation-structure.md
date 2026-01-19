@@ -182,15 +182,52 @@ docs/{vertical}/
 
 ## Diagram References
 
-Reference shared diagrams using LikeC4View:
+### Generated Diagrams (LikeC4, Mermaid, PlantUML)
+
+Reference shared diagrams using LikeC4View or MermaidDiagram components:
 
 ```markdown
 ## Architecture Diagram
 
 <LikeC4View viewId="systemContext" />
+<MermaidDiagram diagramId="flowDiagram" />
 ```
 
-Diagrams are exported and embedded during publishing.
+Diagrams are automatically exported and embedded during publishing.
+
+**Location**: Source files in `architecture/current/{system}/c4/`, `mmd/`, `plantuml/`
+
+### Manual Diagrams
+
+For diagrams created manually (e.g., in draw.io, Figma), place them in a `diagrams/` subdirectory alongside the markdown file:
+
+```
+docs/systems/{system}/Technology View/Current State Views/Features/
+  ├── Feature Name.md
+  └── Feature Name/
+      └── diagrams/
+          ├── deployment-pipeline.png
+          └── architecture-diagram.png
+```
+
+Reference them using relative paths:
+
+```markdown
+![Deployment Pipeline](./Feature Name/diagrams/deployment-pipeline.png)
+```
+
+**Supported formats**: PNG (recommended), SVG, JPG, JPEG, GIF, WebP
+
+**Output handling**:
+- **Astro/GitHub Pages**: Automatically synced to `public/docs/` maintaining directory structure
+- **Confluence**: Automatically uploaded as attachments when publishing
+- **PDF/PPT**: Included in generated documents
+
+**Best practices**:
+- Use descriptive, kebab-case filenames (e.g., `deployment-pipeline.png` not `diagram1.png`)
+- Keep file sizes under 2MB
+- Place diagrams close to the content that uses them
+- For system-level diagrams used across features, use `docs/systems/{system}/diagrams/`
 
 ## Best Practices
 

@@ -4,9 +4,15 @@ import starlight from "@astrojs/starlight";
 import react from "@astrojs/react";
 import { LikeC4VitePlugin } from "likec4/vite-plugin";
 import { fileURLToPath } from "url";
+import remarkFilterConditional from "./src/plugins/remark-filter-conditional.mjs";
 
 // https://astro.build/config
 export default defineConfig({
+  // Markdown processing - filter conditional content blocks
+  markdown: {
+    remarkPlugins: [remarkFilterConditional],
+  },
+
   // Deployment URL configuration
   site:
     process.env.PAGES_SITE_URL ||
