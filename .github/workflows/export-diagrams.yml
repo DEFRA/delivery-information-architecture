@@ -1,0 +1,59 @@
+name: Export LikeC4 Diagrams
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "architecture/**/*.c4"
+      - ".github/workflows/export-diagrams.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  export-diagrams:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright Browsers
+        run: |
+          # Install Playwright browsers required for LikeC4 PNG export
+          npx playwright install --with-deps
+
+      - name: Export LikeC4 Diagrams as Images
+        env:
+          PLAYWRIGHT_TIMEOUT: 180000
+        run: |
+          # Export diagrams to generated/diagrams
+          npm run build:diagrams
+
+      - name: Check export results
+        run: |
+          # Check for exported files
+          png_count=$(find generated/diagrams -name "*.png" 2>/dev/null | wc -l)
+          export_success=$([ "$png_count" -gt 0 ] && echo "true" || echo "false")
+
+          echo "has_diagrams=$export_success" >> $GITHUB_OUTPUT
+          echo "Found $png_count PNG file(s)"
+
+      - name: Upload diagram exports as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: likec4-diagrams
+          path: generated/diagrams
+          if-no-files-found: warn
+          retention-days: 30

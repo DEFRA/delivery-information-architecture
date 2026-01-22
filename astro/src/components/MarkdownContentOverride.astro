@@ -1,0 +1,108 @@
+---
+// Override Starlight's MarkdownContent to make diagram images clickable
+import Default from '@astrojs/starlight/components/MarkdownContent.astro';
+import ClickableImage from './ClickableImage.astro';
+
+const props = Astro.props;
+---
+
+<Default {...props}>
+  <slot />
+</Default>
+
+<script>
+  // Full-screen modal for diagrams
+  function createModal() {
+    const modal = document.createElement('div');
+    modal.id = 'diagram-modal';
+    modal.className = 'diagram-modal';
+    modal.innerHTML = `
+      <div class="diagram-modal-backdrop"></div>
+      <div class="diagram-modal-content">
+        <button class="diagram-modal-close" aria-label="Close">&times;</button>
+        <img class="diagram-modal-image" src="" alt="" />
+        <div class="diagram-modal-caption"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+    return modal;
+  }
+
+  function openModal(imgSrc, imgAlt, caption) {
+    let modal = document.getElementById('diagram-modal');
+    if (!modal) {
+      modal = createModal();
+    }
+    
+    const modalImg = modal.querySelector('.diagram-modal-image');
+    const modalCaption = modal.querySelector('.diagram-modal-caption');
+    const backdrop = modal.querySelector('.diagram-modal-backdrop');
+    const closeBtn = modal.querySelector('.diagram-modal-close');
+    
+    modalImg.src = imgSrc;
+    modalImg.alt = imgAlt || '';
+    modalCaption.textContent = caption || imgAlt || '';
+    
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Close handlers
+    const closeModal = () => {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+    
+    backdrop.onclick = closeModal;
+    closeBtn.onclick = closeModal;
+    modalImg.onclick = (e) => e.stopPropagation();
+    
+    // ESC key to close
+    const escHandler = (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+        document.removeEventListener('keydown', escHandler);
+      }
+    };
+    document.addEventListener('keydown', escHandler);
+  }
+
+  // Make images clickable after page load
+  function makeImagesClickable() {
+    // Handle images in figures and standalone images
+    const images = document.querySelectorAll('.sl-markdown-content figure img, .sl-markdown-content img[src*="/likec4-exports/"], .sl-markdown-content img[src*="/docs/"]');
+    
+    images.forEach((img) => {
+      // Skip if already processed
+      if (img.dataset.diagramClickable) {
+        return;
+      }
+      
+      const src = img.getAttribute('src');
+      if (!src) return;
+      
+      // Only process diagram images
+      if (src.includes('/likec4-exports/') || src.includes('/docs/')) {
+        img.dataset.diagramClickable = 'true';
+        img.style.cursor = 'zoom-in';
+        img.classList.add('diagram-clickable');
+        
+        img.addEventListener('click', (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          
+          // Get caption from figure if available
+          const figure = img.closest('figure');
+          const caption = figure ? figure.querySelector('figcaption')?.textContent : '';
+          
+          openModal(src, img.getAttribute('alt') || '', caption);
+        });
+      }
+    });
+  }
+  
+  // Run on page load
+  makeImagesClickable();
+  
+  // Run after view transitions (Starlight uses view transitions)
+  document.addEventListener('astro:page-load', makeImagesClickable);
+</script>

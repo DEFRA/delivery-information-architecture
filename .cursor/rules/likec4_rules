@@ -1,0 +1,185 @@
+# Defra Documentation Template - Architecture Rules
+
+## Project Overview
+This repository contains C4/LikeC4 architecture documentation for Defra vertical systems.
+Current active systems are defined in the current/ directory, whereas future roadmapped features are defined in /roadmap.
+
+## File Structure
+
+### C4/LikeC4 Model Files Location
+```
+my-vertical-docs/architecture/
+├── current/                    # Current architecture - already in use
+│   ├── vertical/c4/            # Cross-cutting vertical architecture
+│   │   ├── actors.c4          # Person definitions (user, admin, etc.)
+│   │   ├── external.c4        # External systems (Azure AD, Redis, etc.)
+│   │   ├── relationships.c4   # Cross-system relationships
+│   │   ├── specification.c4   # LikeC4 configuration (shared from root)
+│   │   └── landscape.c4       # High-level landscape view
+│   ├── system1/c4/            # System 1 architecture
+│   │   ├── system1.c4         # Main system model (systems, containers, components)
+│   │   ├── containers/        # Container-level relationship definitions
+│   │   │   └── container1.c4
+│   │   └── views/             # View definitions
+│   │       ├── authentication.c4      # Authentication flow views
+│   │       └── solutionOverview.c4    # Solution overview views
+│   ├── system2/c4/            # System 2 architecture
+│   │   └── system2.c4
+│   └── ...
+├── roadmap/                    # Future architecture, roadmapped for potential use.
+│   └── feature-name/            # Example epic/feature
+└── specification.c4            # Shared LikeC4 element types and styles (at root)
+```
+
+### Mermaid Diagrams
+```
+my-vertical-docs/architecture/current/
+├── system1/mmd/            # System 1 Mermaid diagrams
+│   └── flow.mmd
+└── system2/mmd/            # System 2 Mermaid diagrams
+    └── sequence.mmd
+```
+
+## Key Architectural Elements
+
+### Actor Definitions (in vertical/c4/actors.c4)
+Common actors might include:
+- `user` - End user of the system
+- `admin` - System administrator
+- `operator` - System operator
+- `externalUser` - External user accessing the system
+- `systemUser` - System-to-system user
+
+### External Systems (in vertical/c4/external.c4)
+Common external systems might include:
+- `defraAzAD` - Defra Azure AD (B2B authentication for internal users)
+- `defraCustomerIdentity` - Defra Customer Identity (B2C for external users)
+- `azureRedisCache` - Session storage
+- `webBrowser` - User's web browser
+- Other external services as needed
+
+## View Types
+
+### Dynamic Views (Sequence Diagrams)
+Show step-by-step interaction flows. Defined in `views/` folders.
+
+**Important**: LikeC4 automatically numbers steps in dynamic views. Do NOT include step numbers in action descriptions.
+
+Example structure:
+```
+dynamic view viewName {
+  title "Current / System / Category / View Name"
+  description "What this view shows"
+  
+  // Comments describe the phase/group of steps
+  actor1 -> system1 "Action description"
+  system1 -> component1 "Internal processing"
+  
+  // Next phase
+  component1 -> system2 "Call external system"
+  system2 -> component1 "Response"
+}
+```
+
+### Static Views (Container/Component Views)
+Show structural relationships. Include statements specify what to show.
+
+Example:
+```
+view viewName {
+  title "Current / System / View Name"
+  description "What this view shows"
+  
+  include system.*
+  include externalSystem
+  
+  autoLayout TopBottom
+}
+```
+
+## Naming Conventions
+
+### System Names
+- Use camelCase: `system1`, `system2`, `vertical`
+- Microservices: `system.serviceName` (e.g., `system1.notificationService`)
+- Components: `system.container.component` (e.g., `system1.api.authenticationManager`)
+
+### View Names
+- Prefix with system: `system1AuthenticationFlow`
+- Use descriptive names: `system1BearerTokenAuthentication`
+- Group related views in same file
+
+### Relationship Descriptions
+- Use clear action verbs: "Authenticates via", "Routes to", "Validates"
+- Include protocol when relevant: "HTTPS", "HTTPS/REST"
+- Be specific about data: "JWT access token", "Notification data"
+
+## Documentation Standards
+
+### When Creating Dynamic Views
+1. **Do NOT number steps** - LikeC4 automatically numbers them
+2. Use comments to group related steps and describe phases
+3. Show both success and relevant validation steps
+4. Include external system interactions (Azure AD, Redis, etc.)
+5. Show complete request and response flow
+6. Use clear, descriptive action text without manual numbering
+
+### When Creating Static Views
+1. Use `include` to specify what elements to show
+2. Use wildcards for grouping: `system1.api.*`
+3. Specify autoLayout: TopBottom, LeftRight
+4. Add meaningful descriptions
+
+## Common Tasks
+
+### Adding a New Flow
+1. Add dynamic view to e.g. `current/system1/c4/views/authentication.c4`
+2. Include relevant actors, systems, and components
+
+### Adding New Microservice
+1. Define in appropriate system file (e.g., `current/system1/c4/system1.c4`)
+2. Add relationships to other services
+3. Update relevant views to include new service
+
+### Future features
+1. Create directory under roadmap, with each feature having its own directory
+2. Include relevant actors, systems, and components. Extend (using 'extend' feature of likec4) where appropriate and assume re-use of current components for reference.
+3. Extend model where necessary
+4. Add new views as required
+
+### Cross-System Relationships
+Define in `vertical/c4/relationships.c4` for system-to-system connections.
+These should be replaced by container level connections once available.
+
+## Key Files Reference
+
+- **Actor definitions**: `vertical/c4/actors.c4`
+- **External systems**: `vertical/c4/external.c4`
+- **System main models**: `system1/c4/system1.c4`, `system2/c4/system2.c4`, etc.
+- **Authentication views**: `system1/c4/views/authentication.c4`
+- **Container details**: `system1/c4/containers/container1.c4`
+- **Cross-system relationships**: `vertical/c4/relationships.c4`
+- **Shared specification**: `specification.c4` (at architecture root)
+
+## Technology Stack References
+
+### Common Services
+- Frontend: Node.js/Hapi or similar
+- Microservices: Java/Spring Boot, C# .NET, or Node.js
+- Gateway: Spring Cloud Gateway or similar
+- Authentication: OAuth2 (Azure AD B2B + B2C)
+- Session: Azure Redis Cache
+- Database: MongoDB, PostgreSQL, or Azure SQL
+
+### Integration Protocols
+- SOAP: Legacy systems
+- REST/HTTPS: Internal microservice communication
+- OAuth2: Authentication flows
+- JWT: Token-based authorization
+
+### CDP supported services
+- Core Delivery Platform. Built on top of AWS.
+- All services are provided as containers, running on Fargate
+- Lambda functions are not supported
+- All services should be NodeJS/Hapi for frontend, C# .NET or NodeJS for backend.
+- Only MongoDB is supported. PostgreSQL is available by exception

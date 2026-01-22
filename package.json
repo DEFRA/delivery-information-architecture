@@ -1,0 +1,32 @@
+{
+  "name": "@defra/delivery-information-architecture",
+  "version": "1.0.0",
+  "description": "Defra-wide architecture view + starter template for vertical documentation",
+  "private": true,
+  "scripts": {
+    "dev": "node scripts/check-diagrams.js && cd astro && npm run dev",
+    "build": "cd astro && npm run build",
+    "build:diagrams": "export-diagrams",
+    "build:mmd": "node node_modules/@defra/delivery-info-arch-tooling/lib/diagrams/convert-mmd.js",
+    "build:mermaid-from-likec4": "node node_modules/@defra/delivery-info-arch-tooling/lib/diagrams/convert-likec4-to-mermaid.js",
+    "validate:c4": "likec4 validate",
+    "prepare": "husky",
+    "export:pdf": "export-pdf",
+    "pptx:build": "generate-pptx",
+    "publish:confluence": "publish-to-confluence --config scripts/confluence/confluence-config.json",
+    "publish:confluence:space": "publish-to-confluence --config scripts/confluence/confluence-config.json --space",
+    "lint": "neostandard",
+    "lint:fix": "neostandard --fix"
+  },
+  "dependencies": {
+    "@defra/delivery-info-arch-tooling": "file:../delivery-info-arch-tooling"
+  },
+  "devDependencies": {
+    "form-data": "^4.0.0",
+    "glob": "^11.0.0",
+    "husky": "^9.0.0",
+    "likec4": "^1.47.0",
+    "markdown-pdf": "^11.0.0",
+    "neostandard": "^0.12.2"
+  }
+}

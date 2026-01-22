@@ -1,0 +1,61 @@
+name: Generate PDFs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**/*.md"
+      - "architecture/**/analysis/**/*.md"
+      - ".github/workflows/generate-pdf.yml"
+  workflow_dispatch:
+    inputs:
+      file_path:
+        description: 'Specific file path to generate PDF for (optional, leave empty for all)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  generate-pdf:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate PDFs
+        run: |
+          if [ -n "${{ github.event.inputs.file_path }}" ]; then
+            echo "Generating PDF for specific file: ${{ github.event.inputs.file_path }}"
+            npm run export:pdf -- "${{ github.event.inputs.file_path }}"
+          else
+            echo "Generating PDFs for all markdown files"
+            npm run export:pdf
+          fi
+
+      - name: Upload PDF artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-pdfs
+          path: generated/pdf/**
+          retention-days: 30
+
+      - name: Commit generated PDFs (optional)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add generated/pdf/**
+          git diff --staged --quiet || git commit -m "chore: regenerate PDFs [skip ci]"
+          git push || echo "No changes to commit"

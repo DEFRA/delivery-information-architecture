@@ -1,0 +1,55 @@
+name: Generate PowerPoint Presentations
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "docs/**/*.md"
+      - "architecture/**/analysis/**/*.md"
+      - ".github/workflows/generate-pptx.yml"
+  workflow_dispatch:
+    inputs:
+      file_path:
+        description: 'Specific file path to generate PPTX for (required)'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  generate-pptx:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+          cache-dependency-path: package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate PPTX
+        run: |
+          npm run generate:pptx -- "${{ github.event.inputs.file_path }}"
+
+      - name: Upload PPTX artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: generated-pptx
+          path: generated/pptx/**
+          retention-days: 30
+
+      - name: Commit generated PPTX (optional)
+        if: github.ref == 'refs/heads/main'
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add generated/pptx/**
+          git diff --staged --quiet || git commit -m "chore: regenerate PPTX [skip ci]"
+          git push || echo "No changes to commit"
