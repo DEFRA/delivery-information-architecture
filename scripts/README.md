@@ -32,13 +32,14 @@ Available commands (from root `package.json`):
 | Command | Description |
 |---------|-------------|
 | `npm run dev` | Start Astro dev server (auto-generates diagrams if missing) |
+| `npm run build` | Build Astro site for production |
 | `npm run build:diagrams` | Export LikeC4 diagrams as PNG to `generated/diagrams/` |
 | `npm run build:mmd` | Convert Mermaid files to SVG |
 | `npm run build:mermaid-from-likec4` | Generate Mermaid from LikeC4 dynamic views |
-| `npm run pptx:build <file>` | Generate PowerPoint from markdown |
-| `npm run export:pdf <file>` | Export markdown to PDF |
+| `npm run pptx:build "file.md" -- --title "Title"` | Generate PowerPoint from markdown (use `--` to pass options) |
+| `npm run export:pdf file.md` | Export markdown to PDF |
 | `npm run publish:confluence` | Publish all docs to Confluence |
-| `npm run publish:confluence:space <KEY>` | Publish to specific Confluence space |
+| `npm run publish:confluence:space KEY` | Publish to specific Confluence space (e.g., `BTMS`) |
 | `npm run validate:c4` | Validate C4 models |
 
 ## Documentation

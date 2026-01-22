@@ -1,7 +1,7 @@
 # Defra Delivery Information Architecture
 
 ## Documentation as Code
-This repository follows a documentation-as-code approach. See the [Documentation as Code guide](https://defra.github.io/delivery-information-architecture/documentation-as-code) for an overview of the philosophy, benefits, and approach.
+This repository follows a documentation-as-code approach. See the [Documentation as Code guide](docs/guidelines/documentation-as-code.md) for an overview of the philosophy, benefits, and approach.
 
 ## Contents
 This repository provides:
@@ -255,7 +255,7 @@ delivery-information-architecture/
 
 ## 📚 Related Resources
 
-- [Documentation as Code Guide](https://defra.github.io/delivery-information-architecture/documentation-as-code) - Philosophy and approach to documentation-as-code at Defra
+- [Documentation as Code Guide](docs/guidelines/documentation-as-code.md) - Philosophy and approach to documentation-as-code at Defra
 - [Tooling Library](https://github.com/DEFRA/delivery-info-arch-tooling) - Shared documentation generation tools
 - [Trade Documentation](https://github.com/DEFRA/trade-imports-documentation) - Example vertical documentation
 - [LikeC4](https://likec4.dev) - Architecture diagramming tool
