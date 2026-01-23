@@ -24,7 +24,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: DEFRA/delivery-info-arch-tooling
-          path: ../delivery-info-arch-tooling
+          path: .tooling
 
       - name: Download diagram exports (if available)
         id: download-diagrams
@@ -58,7 +58,10 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install dependencies
-        run: npm ci
+        run: |
+          # Install tooling from checked-out path (overrides file:../delivery-info-arch-tooling)
+          npm install ./.tooling
+          npm ci --ignore-scripts
 
       - name: Check Confluence configuration
         id: check-config
