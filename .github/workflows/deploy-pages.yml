@@ -52,7 +52,12 @@ jobs:
         run: npm ci
         working-directory: ./astro
 
+      - name: Install Playwright Browsers
+        run: npx playwright install --with-deps chromium
+
       - name: Generate diagrams
+        env:
+          PLAYWRIGHT_TIMEOUT: 180000
         run: npm run build:diagrams
 
       - name: Build Astro Site

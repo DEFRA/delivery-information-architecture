@@ -1,12 +1,6 @@
 name: Generate PowerPoint Presentations
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - "docs/**/*.md"
-      - "architecture/**/analysis/**/*.md"
-      - ".github/workflows/generate-pptx.yml"
   workflow_dispatch:
     inputs:
       file_path:
@@ -53,12 +47,17 @@ jobs:
           name: generated-pptx
           path: generated/pptx/**
           retention-days: 30
+          if-no-files-found: warn
 
       - name: Commit generated PPTX (optional)
         if: github.ref == 'refs/heads/main'
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add generated/pptx/**
-          git diff --staged --quiet || git commit -m "chore: regenerate PPTX [skip ci]"
-          git push || echo "No changes to commit"
+          if [ -d "generated/pptx" ] && [ -n "$(ls -A generated/pptx 2>/dev/null)" ]; then
+            git add generated/pptx/
+            git diff --staged --quiet || git commit -m "chore: regenerate PPTX [skip ci]"
+            git push || echo "No changes to push"
+          else
+            echo "No PPTX files generated, skipping commit"
+          fi
