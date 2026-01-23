@@ -20,6 +20,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Check out tooling repository
+        uses: actions/checkout@v4
+        with:
+          repository: DEFRA/delivery-info-arch-tooling
+          path: ../delivery-info-arch-tooling
+
       - name: Download diagram exports (if available)
         id: download-diagrams
         uses: actions/download-artifact@v4

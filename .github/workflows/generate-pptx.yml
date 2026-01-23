@@ -24,6 +24,12 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Check out tooling repository
+        uses: actions/checkout@v4
+        with:
+          repository: DEFRA/delivery-info-arch-tooling
+          path: ../delivery-info-arch-tooling
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
@@ -36,7 +42,7 @@ jobs:
 
       - name: Generate PPTX
         run: |
-          npm run generate:pptx -- "${{ github.event.inputs.file_path }}"
+          npm run pptx:build -- "${{ github.event.inputs.file_path }}"
 
       - name: Upload PPTX artifacts
         uses: actions/upload-artifact@v4
