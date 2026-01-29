@@ -12,6 +12,10 @@ To this end, we currently look to generate documentation for three target system
 - **Powerpoint**: For offline consumption, presenting and sharing externally, Powerpoint slides are used. These typically include a summary of what is created on confluence.
 - **Github pages**: For users of the github repos themselves, can make reading content easier than trawling through the repos.
 
+### Tooling (delivery-info-arch-tooling)
+
+Diagram export, conversion, PDF, PPT, and Confluence publishing are provided by **delivery-info-arch-tooling** (linked as `@defra/delivery-info-arch-tooling`). Prefer adding new behaviour there and invoking it via npm scripts in `package.json` (e.g. `build:diagrams`, `build:mmd`, `export:pdf`, `pptx:build`, `publish:confluence`).
+
 ## File Structure
 
 ### Directory Organization
@@ -56,6 +60,28 @@ my-vertical-docs/
 - **Diagram files**: Follow LikeC4 naming conventions (see `.cursor/rules/likec4_rules`)
 
 ## Markdown Content Guidelines
+
+### Frontmatter (required for Astro/Starlight)
+
+Docs under `docs/` are used in Astro's Starlight content collection and **must** include YAML frontmatter so they satisfy the docs schema. Otherwise you can get `InvalidContentEntryDataError: title: Required`.
+
+- **Always** add frontmatter at the very top of every new or edited `.md` / `.mdx` file in `docs/`:
+  - `title` (required) — short page title for nav/sidebar
+  - `description` (optional) — one-line summary
+- Put the H1 heading (`# Title`) immediately after the frontmatter; the `title` in frontmatter can match or shorten it.
+
+Example:
+
+```markdown
+---
+title: System Context View
+description: High-level context for the system
+---
+
+# System Context View
+
+This document describes...
+```
 
 ### Document Structure
 
@@ -220,22 +246,27 @@ Content only visible in PowerPoint slides
 
 ## Diagram Integration
 
-### LikeC4 Diagrams
-- Source files: `architecture/current/<system>/c4/`
-- Views defined in `.c4` files
-- Automatically exported to PNG during build
-- Embedded using `<LikeC4View viewId="view-name" />` component
+**Use PNG only for all diagram images** in docs (LikeC4 and Mermaid). Do not mix PNG and SVG; Confluence and PPT expect PNG. Reference exported images under `/likec4-exports/` (or equivalent) with `.png` extension.
 
-### Mermaid Diagrams
-- Source files: `architecture/current/<system>/mmd/`
-- Converted to images during build
-- Reference in markdown: `![Diagram](./path/to/diagram.png)`
+Diagram export and conversion are provided by **delivery-info-arch-tooling**. Use the npm scripts that call into that tooling (e.g. `npm run build:diagrams`, `npm run build:mmd`); outputs go to `generated/diagrams/` and are synced for the site.
+
+### LikeC4 Diagrams
+- Source files: `architecture/current/<system>/c4/` (`.c4` files)
+- Export: use tooling via `npm run build:diagrams` (runs `export-diagrams` from delivery-info-arch-tooling) → output in `generated/diagrams/`, then synced for the site.
+- In docs: `<LikeC4View viewId="view-name" />` with optional fallback `![Alt](/likec4-exports/viewId.png)` inside `<!-- GITHUB_ONLY -->` for GitHub Pages.
+
+### Mermaid (.mmd) Diagrams
+- Source files: `architecture/current/<system>/mmd/` (`.mmd` files)
+- Export: use tooling via `npm run build:mmd` (runs convert-mmd from delivery-info-arch-tooling). Outputs PNG to `generated/diagrams/` (flat structure).
+- In docs: use `<MermaidDiagram diagramId="diagram-name" />` for Confluence, with fallback `![Alt](/likec4-exports/diagram-name.png)` inside `<!-- GITHUB_ONLY -->` for GitHub Pages. Same pattern as LikeC4 diagrams.
 
 ### Diagram Best Practices
 - Keep diagrams focused and readable
 - Use consistent naming conventions
 - Update diagrams when architecture changes
 - Export diagrams before publishing to ensure they're available
+- **Do not add "Diagram Notes" callouts** or similar meta-information about diagrams
+- **Docs should never mention source files, tooling, or build steps** — readers don't need to know about `.c4`, `.mmd`, `build:diagrams`, delivery-info-arch-tooling, etc. Just include the diagram images.
 
 ## Content Quality Guidelines
 
