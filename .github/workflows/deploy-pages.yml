@@ -44,12 +44,13 @@ jobs:
 
       - name: Install root dependencies
         run: |
-          # Install tooling from checked-out path (overrides file:../delivery-info-arch-tooling)
+          # Install tooling from checked-out path (overrides file:../delivery-info-arch-tooling).
+          # Use npm install only so transitive deps (e.g. picomatch) are resolved without requiring lock file sync.
           npm install ./.tooling
-          npm ci --ignore-scripts
 
       - name: Install Astro dependencies
-        run: npm ci
+        # Use npm install so lockfile can be updated if out of sync (e.g. after transitive dep updates like picomatch)
+        run: npm install
         working-directory: ./astro
 
       - name: Install Playwright Browsers
